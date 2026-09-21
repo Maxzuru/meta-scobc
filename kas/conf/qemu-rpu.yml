@@ -1,0 +1,12 @@
+header:
+  version: 19
+
+local_conf_header:
+  local-rpu-firmware: |
+    ENABLE_RPU_FIRMWARE = "1"
+
+    QEMU_HW_SERIAL = "-serial null -serial null -serial mon:stdio -serial tcp:0.0.0.0:4321,server=on,wait=on"
+
+env:
+  RPU_FIRMWARE_URI:
+  RPU_FIRMWARE_SHA256:
