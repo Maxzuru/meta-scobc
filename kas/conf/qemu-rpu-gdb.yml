@@ -1,0 +1,11 @@
+header:
+  version: 19
+
+local_conf_header:
+  qemu-rpu-gdb: |
+    # Do not embed the RPU ELF in BOOT.bin.
+    ENABLE_RPU_FIRMWARE = "0"
+
+    # GDB server and RPU UART.
+    QB_OPT_APPEND:append = " -s"
+    QEMU_HW_SERIAL = "-serial null -serial null -serial mon:stdio -serial tcp:0.0.0.0:4321,server=on,wait=on"
