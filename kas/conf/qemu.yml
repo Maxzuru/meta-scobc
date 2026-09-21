@@ -1,0 +1,19 @@
+header:
+  version: 19
+
+local_conf_header:
+  qemu-images: |
+    # The ordinary minimal/dev images already get wic.qemu-sd from
+    # versal-generic.conf. The wrapper images need explicit handling.
+
+    IMAGE_FSTYPES:append:pn-sc-image-ramroot = " wic.qemu-sd"
+    QB_DEFAULT_FSTYPE:pn-sc-image-ramroot = "wic.qemu-sd"
+    QB_FSINFO:pn-sc-image-ramroot = "wic:no-kernel-in-fs"
+    QB_ROOTFS:pn-sc-image-ramroot = ""
+    QB_ROOTFS_OPT:pn-sc-image-ramroot = " -drive if=sd,index=${QEMU_HW_SD_DRIVE_INDEX},file=@ROOTFS@,format=raw"
+
+    IMAGE_FSTYPES:append:pn-sc-image-dualboot = " wic.qemu-sd"
+    QB_DEFAULT_FSTYPE:pn-sc-image-dualboot = "wic.qemu-sd"
+    QB_FSINFO:pn-sc-image-dualboot = "wic:no-kernel-in-fs"
+    QB_ROOTFS:pn-sc-image-dualboot = ""
+    QB_ROOTFS_OPT:pn-sc-image-dualboot = " -drive if=sd,index=${QEMU_HW_SD_DRIVE_INDEX},file=@ROOTFS@,format=raw"
