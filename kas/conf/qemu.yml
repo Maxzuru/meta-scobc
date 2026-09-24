@@ -3,6 +3,8 @@ header:
 
 local_conf_header:
   qemu-images: |
+    QB_MEM = "-m 4G"
+
     # Use SD controller 0
     QEMU_HW_BOOT_MODE = "3"
     QEMU_HW_SD_DRIVE_INDEX = "0"
