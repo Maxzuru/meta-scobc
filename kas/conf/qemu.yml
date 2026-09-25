@@ -6,8 +6,8 @@ local_conf_header:
     QB_MEM = "-m 4G"
 
     # Use SD controller 0
-    QEMU_HW_BOOT_MODE = "3"
-    QEMU_HW_SD_DRIVE_INDEX = "0"
+    QEMU_HW_BOOT_MODE ?= "3"
+    QEMU_HW_SD_DRIVE_INDEX ?= "0"
 
     # The ordinary minimal/dev images already get wic.qemu-sd from
     # versal-generic.conf. The wrapper images need explicit handling.

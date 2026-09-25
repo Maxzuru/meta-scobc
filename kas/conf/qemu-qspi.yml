@@ -1,0 +1,21 @@
+header:
+  version: 19
+  includes:
+    - kas/conf/qemu.yml
+
+local_conf_header:
+  qemu-qspi-boot: |
+    SCOBC_QEMU_BOOT_MODE = "2"
+    QEMU_HW_BOOT_MODE = "${SCOBC_QEMU_BOOT_MODE}"
+
+    QB_OPT_APPEND:append = " -drive file=@DEPLOY_DIR_IMAGE@/qemu-qspi-${MACHINE}.bin,if=mtd,format=raw,index=0,readonly=on -drive file=@DEPLOY_DIR_IMAGE@/qemu-qspi-${MACHINE}.bin,if=mtd,format=raw,index=1,readonly=on"
+
+    # The generic Xilinx boot script expects the distro-boot framework to set
+    # these variables. QEMU sources boot.scr directly after the QSPI boot, so
+    # select the OS boot partition explicitly. The defaults select SD0; the
+    # eMMC overlay overrides the device number while keeping QSPI as stage 1.
+    SCOBC_QEMU_OS_DEVTYPE ??= "mmc"
+    SCOBC_QEMU_OS_DEVNUM ??= "0"
+    SCOBC_QEMU_OS_BOOT_PART ??= "1"
+
+    PRE_BOOTENV:pn-u-boot-xlnx-scr = "setenv devtype ${SCOBC_QEMU_OS_DEVTYPE}; setenv devnum ${SCOBC_QEMU_OS_DEVNUM}; setenv distro_bootpart ${SCOBC_QEMU_OS_BOOT_PART}; setenv boot_targets ${SCOBC_QEMU_OS_DEVTYPE}${SCOBC_QEMU_OS_DEVNUM};"
