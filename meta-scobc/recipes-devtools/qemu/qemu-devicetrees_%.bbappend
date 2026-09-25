@@ -1,3 +1,3 @@
 REPO = "git://github.com/maxzuru/qemu-devicetrees.git;protocol=https"
 BRANCH = "scobc-v1"
-SRCREV = "322d831a431aed7ac108fcc3288f700c679bb617"
+SRCREV = "fed58592f30ed87959deba9d2242b966f233dfe3"
