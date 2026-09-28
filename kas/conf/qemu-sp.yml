@@ -1,0 +1,26 @@
+header:
+  version: 19
+
+local_conf_header:
+  qemu-sp: |
+    # Run the safety processor QEMU alongside the Versal instances and
+    # connect it to SPI1 over remote-port. The multiarch wrapper starts
+    # the riscv32 instance given with -asu-args in the common machine
+    # path, where both sides find the remote-port socket.
+    SCOBC_QEMU_SP_SERIAL ?= "-serial tcp:0.0.0.0:4322,server=on,wait=on"
+    # Human monitor for qom-set on the sensor models, e.g. nc localhost 4323
+    SCOBC_QEMU_SP_MONITOR ?= "-monitor tcp:0.0.0.0:4323,server=on,wait=off"
+
+    QEMU_HW_DTB_PS = "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-sp-virt.dtb"
+
+    # QEMU's loader takes a plain path, not a fetcher URI
+    SP_FIRMWARE_PATH = "${@(d.getVar('SP_FIRMWARE_URI') or '').removeprefix('file://')}"
+
+    QB_OPT_APPEND:append = " -asu-args '-M riscv-fdt \
+        -hw-dtb @DEPLOY_DIR_IMAGE@/${QEMU_HW_DTB_PATH}/board-scobc-v1-sp-virt.dtb \
+        -device loader,file=${SP_FIRMWARE_PATH},cpu-num=0 \
+        -nodefaults -display none ${SCOBC_QEMU_SP_SERIAL} ${SCOBC_QEMU_SP_MONITOR}'"
+
+env:
+  SP_FIRMWARE_URI:
+  SP_FIRMWARE_SHA256:
