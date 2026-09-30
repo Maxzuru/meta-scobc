@@ -6,6 +6,11 @@ local_conf_header:
     # Do not embed the RPU ELF in BOOT.bin.
     ENABLE_RPU_FIRMWARE = "0"
 
+    # The RPU owns GEM1, the second -net nic. With runqemu slirp, forward
+    # the RPU's TCP port to the host.
+    QB_NETWORK_DEVICE = "-net nic -net nic,netdev=net0,macaddr=@MAC@"
+    QB_SLIRP_OPT = "-netdev user,id=net0,hostfwd=tcp:0.0.0.0:4242-:4242"
+
     # GDB server and RPU UART.
     QB_OPT_APPEND:append = " -s"
     QEMU_HW_SERIAL = "-serial null -serial null -serial mon:stdio -serial tcp:0.0.0.0:4321,server=on,wait=on"

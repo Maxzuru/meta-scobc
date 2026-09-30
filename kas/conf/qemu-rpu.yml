@@ -7,6 +7,13 @@ local_conf_header:
 
     QEMU_HW_SERIAL = "-serial null -serial null -serial mon:stdio -serial tcp:0.0.0.0:4321,server=on,wait=on"
 
+    # QEMU hands out -net nic entries to the GEMs in devicetree order, so
+    # the second one goes to GEM1, which the RPU owns. Attach it to the
+    # runqemu tap/slirp backend; GEM0 is unused by Linux anyway.
+    QB_NETWORK_DEVICE = "-net nic -net nic,netdev=net0,macaddr=@MAC@"
+    # With runqemu slirp, forward the RPU's TCP port to the host
+    QB_SLIRP_OPT = "-netdev user,id=net0,hostfwd=tcp:0.0.0.0:4242-:4242"
+
 env:
   RPU_FIRMWARE_URI:
   RPU_FIRMWARE_SHA256:

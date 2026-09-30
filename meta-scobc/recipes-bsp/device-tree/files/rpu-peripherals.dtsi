@@ -1,7 +1,29 @@
+&{/} {
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		/*
+		 * DDR for standalone RPU firmware. U-Boot loads images at
+		 * 0x00200000, 0x04000000 and 0x10000000, so keep clear of those.
+		 * FIXME: Overlaps rproc0_reserved in openamp.dtsi.
+		 */
+		rpu0_ddr: rpu0-ddr@9800000 {
+			no-map;
+			reg = <0x0 0x09800000 0x0 0x100000>;
+		};
+	};
+};
+
 &ttc0 {
 	status = "disabled";
 };
 
 &serial1 {
+	status = "disabled";
+};
+
+&gem1 {
 	status = "disabled";
 };
