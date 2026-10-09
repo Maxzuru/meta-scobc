@@ -1,0 +1,11 @@
+header:
+  version: 19
+
+repos:
+  meta-scobc:
+    layers:
+      meta-scobc-cfs:
+
+local_conf_header:
+  cfs: |
+    CORE_IMAGE_EXTRA_INSTALL:append = " cfs-scobc"

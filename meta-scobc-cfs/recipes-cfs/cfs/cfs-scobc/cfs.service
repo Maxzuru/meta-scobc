@@ -1,0 +1,17 @@
+[Unit]
+Description=NASA core Flight System (@CFS_CPUNAME@)
+
+[Service]
+WorkingDirectory=@CFS_INSTALL_DIR@/@CFS_CPUNAME@
+ExecStart=@CFS_INSTALL_DIR@/@CFS_CPUNAME@/core-@CFS_CPUNAME@
+# cFE exits on processor and power-on resets requested through ES. The PSP
+# keeps the reset type in shared memory, so restarting the process completes
+# the reset.
+Restart=always
+RestartSec=1
+# OSAL uses POSIX message queues and real-time scheduling.
+LimitMSGQUEUE=infinity
+LimitRTPRIO=infinity
+
+[Install]
+WantedBy=multi-user.target

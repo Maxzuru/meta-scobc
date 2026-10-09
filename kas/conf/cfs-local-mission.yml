@@ -1,0 +1,15 @@
+# Build cfs-scobc from a local clone of the mission repository instead of
+# GitHub, at its current branch head. Mount the clone into the container at
+# /mission:
+#
+#   kas-container --runtime-args "-v /path/to/scobc-mission:/mission:ro" \
+#       build kas/scobc-v1.yml:kas/conf/cfs.yml:kas/conf/cfs-local-mission.yml
+#
+# Only committed changes are built.
+header:
+  version: 19
+
+local_conf_header:
+  cfs-local-mission: |
+    CFS_MISSION_URI:pn-cfs-scobc = "git:///mission;protocol=file;branch=main"
+    SRCREV_mission:pn-cfs-scobc = "${AUTOREV}"
