@@ -36,7 +36,7 @@ SRC_URI = " \
     "
 
 # Mission repository, which holds the <mission>_defs directory
-CFS_MISSION_URI ?= "git://git@github.com/spacecubics/scobc-mission.git;protocol=ssh;branch=main"
+CFS_MISSION_URI ?= "git://github.com/spacecubics/scobc-sample-mission.git;protocol=https;branch=dev"
 
 SRCREV_cfe = "f22e538cafe56cf44b15996b67bd1e90850a30cf"
 SRCREV_osal = "2da81c1c60129209f44e1f42e079f79a6cf6becc"
@@ -47,7 +47,7 @@ SRCREV_sch_lab = "bc848cd8a6c0407023b959191e8aa39a01928444"
 SRCREV_to_lab = "38f7312ec4c1109b8f1c0738730b6e5ac5860f05"
 SRCREV_sample_lib = "2d8b7e862673ef90da4355890e18e92822e8acd7"
 SRCREV_elf2cfetbl = "118b55fe1d128b48dc45fd36278b87827c6d3faa"
-SRCREV_mission = "ceb8097070a975a52712a4f8b20991f91eca44b4"
+SRCREV_mission = "fc8ebe76c95f4a7ccaad452d574e9705d0a5c314"
 SRCREV_FORMAT = "cfe"
 
 PV = "7.0.1+git"
