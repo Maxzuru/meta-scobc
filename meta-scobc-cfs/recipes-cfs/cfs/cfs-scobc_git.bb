@@ -17,13 +17,12 @@ LIC_FILES_CHKSUM = " \
     file://tools/elf2cfetbl/LICENSE;md5=86d3f3a95c324c9479bd8986968f4327 \
     "
 
-# The revisions match the Zephyr build of the mission (west.yml in
-# cfs-demo). The Space Cubics cFE and PSP forks only add the Zephyr port on
-# top of the upstream revisions used here.
+# All cFS repositories are pinned to the same cFS release tag, so that they
+# are stable and aligned with each other.
 SRC_URI = " \
-    git://github.com/nasa/cFE.git;protocol=https;branch=dev;name=cfe;destsuffix=cfs/cfe \
-    git://github.com/Maxzuru/osal-zephyr.git;protocol=https;branch=zephyr-functional-tests;name=osal;destsuffix=cfs/osal \
-    git://github.com/nasa/PSP.git;protocol=https;branch=dev;name=psp;destsuffix=cfs/psp \
+    git://github.com/nasa/cFE.git;protocol=https;branch=main;name=cfe;destsuffix=cfs/cfe \
+    git://github.com/nasa/osal.git;protocol=https;branch=main;name=osal;destsuffix=cfs/osal \
+    git://github.com/nasa/PSP.git;protocol=https;branch=main;name=psp;destsuffix=cfs/psp \
     git://github.com/nasa/ci_lab.git;protocol=https;branch=main;name=ci_lab;destsuffix=cfs/apps/ci_lab \
     git://github.com/nasa/sample_app.git;protocol=https;branch=main;name=sample_app;destsuffix=cfs/apps/sample_app \
     git://github.com/nasa/sch_lab.git;protocol=https;branch=main;name=sch_lab;destsuffix=cfs/apps/sch_lab \
@@ -38,19 +37,21 @@ SRC_URI = " \
 # Mission repository, which holds the <mission>_defs directory
 CFS_MISSION_URI ?= "git://github.com/spacecubics/scobc-sample-mission.git;protocol=https;branch=dev"
 
-SRCREV_cfe = "f22e538cafe56cf44b15996b67bd1e90850a30cf"
-SRCREV_osal = "2da81c1c60129209f44e1f42e079f79a6cf6becc"
-SRCREV_psp = "53df1d54c3d29fd23832c59df1104de07a043af2"
+# cFS v7.0.1
+SRCREV_cfe = "c5fb2b4d540bd55eb6c3707da7dd13eee679d4dd"
+SRCREV_osal = "d2d877a69cff47452bcca274b309147d48e6c16f"
+SRCREV_psp = "c4b3b0b65b119e106481ad8e20976ae4d7f554e3"
 SRCREV_ci_lab = "f5d36625336249312ee9d5815bc875e231815bb4"
 SRCREV_sample_app = "2f93d1a4159a02b18d67ee83342c9e96b90e23e4"
 SRCREV_sch_lab = "bc848cd8a6c0407023b959191e8aa39a01928444"
 SRCREV_to_lab = "38f7312ec4c1109b8f1c0738730b6e5ac5860f05"
-SRCREV_sample_lib = "2d8b7e862673ef90da4355890e18e92822e8acd7"
+SRCREV_sample_lib = "537c9297f759ccd4b0138d9c0b9abc065027417f"
 SRCREV_elf2cfetbl = "118b55fe1d128b48dc45fd36278b87827c6d3faa"
+# Mission repository
 SRCREV_mission = "44a74ad461ac4887f0a30e4d0b497c685d7bbcb9"
 SRCREV_FORMAT = "cfe"
 
-PV = "7.0.1+git"
+PV = "7.0.1"
 
 S = "${WORKDIR}/cfs"
 
