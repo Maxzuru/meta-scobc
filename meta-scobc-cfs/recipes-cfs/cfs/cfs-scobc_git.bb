@@ -47,7 +47,7 @@ SRCREV_sch_lab = "bc848cd8a6c0407023b959191e8aa39a01928444"
 SRCREV_to_lab = "38f7312ec4c1109b8f1c0738730b6e5ac5860f05"
 SRCREV_sample_lib = "2d8b7e862673ef90da4355890e18e92822e8acd7"
 SRCREV_elf2cfetbl = "118b55fe1d128b48dc45fd36278b87827c6d3faa"
-SRCREV_mission = "fc8ebe76c95f4a7ccaad452d574e9705d0a5c314"
+SRCREV_mission = "44a74ad461ac4887f0a30e4d0b497c685d7bbcb9"
 SRCREV_FORMAT = "cfe"
 
 PV = "7.0.1+git"
