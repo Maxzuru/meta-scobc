@@ -3,6 +3,8 @@ on:
   pull_request:
     paths-ignore:
       - README.md
+      - flake.nix
+      - flake.lock
 permissions:
   contents: read
 concurrency:
