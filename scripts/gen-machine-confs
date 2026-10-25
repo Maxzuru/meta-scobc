@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# Initialize the environment with `source scripts/sc-init-build-env` first.
+# Usage: ./scripts/gen-machine-confs [machine-name]
+set -euo pipefail
+
+if (( $# > 1 )); then
+    echo "Usage: $0 [machine-name]" >&2
+    exit 1
+fi
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+cd -- "$script_dir/.."
+
+if ! command -v gen-machine-conf >/dev/null 2>&1; then
+    echo 'Error: gen-machine-conf is not available. Run source scripts/sc-init-build-env first.' >&2
+    exit 1
+fi
+
+shopt -s globstar nullglob
+templates=(meta-scobc/conf/machineyaml/**/*.yaml)
+if (( $# == 1 )); then
+    selected=()
+    for template in "${templates[@]}"; do
+        if [[ ${template##*/} == "$1.yaml" ]]; then
+            selected+=("$template")
+        fi
+    done
+    if (( ${#selected[@]} == 0 )); then
+        echo "Error: no YAML template found for machine: $1" >&2
+        exit 1
+    fi
+    templates=("${selected[@]}")
+fi
+if (( ${#templates[@]} == 0 )); then
+    echo 'Error: no YAML templates found in meta-scobc/conf/machineyaml/.' >&2
+    exit 1
+fi
+
+# Query BitBake so local.conf overrides and variable expansions match the generator.
+download_dir=$(bitbake-getvar --value DL_DIR)
+if [[ -z $download_dir ]]; then
+    echo 'Error: BitBake DL_DIR is empty.' >&2
+    exit 1
+fi
+
+rm -rf -- output
+for template in "${templates[@]}"; do
+    machine_name=${template##*/}
+    machine_name=${machine_name%.yaml}
+    # Templates use <HW_NAME>-sdt-full as the machine name.
+    hw_name=${machine_name%-sdt-full}
+    rm -f -- "${download_dir}/${hw_name}.tar.gz"
+    echo "Generating machine configuration from $template"
+    gen-machine-conf parse-sdt --template "$template"
+done
