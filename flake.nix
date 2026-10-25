@@ -63,7 +63,7 @@
         '';
       });
 
-      fhs = pkgs.buildFHSEnv {
+      fhsArgs = {
         name = "scobc-yocto";
         targetPkgs =
           p: with p; [
@@ -108,7 +108,7 @@
             perl
             pkg-config
             procps
-            python3
+            (python3.withPackages (ps: [ ps.pyyaml ]))
             rpcsvc-proto
             rsync
             socat
@@ -148,14 +148,40 @@
         '';
         runScript = "bash";
       };
+      fhs = pkgs.buildFHSEnv fhsArgs;
+      debugFhs = pkgs.buildFHSEnv (
+        fhsArgs
+        // {
+          name = "scobc-yocto-debug";
+          runScript = pkgs.writeShellScript "yocto-debug-shell" ''
+            # Keep Bash's arguments (such as -c) out of the sourced setup script.
+            script_dir=$(cd -- ./scripts && pwd) || exit 1
+            source "$script_dir/sc-init-build-env" "''${KAS_BUILD_DIR:-$script_dir/../build}" || exit 1
+            exec bash --norc "$@"
+          '';
+        }
+      );
     in
     {
-      devShells.${system}.default = fhs.env;
-      packages.${system}.default = fhs;
-      apps.${system}.default = {
-        type = "app";
-        program = "${fhs}/bin/scobc-yocto";
-        meta.description = "Enter the meta-scobc Yocto FHS build environment";
+      devShells.${system} = {
+        default = fhs.env;
+        debug = debugFhs.env;
+      };
+      packages.${system} = {
+        default = fhs;
+        debug = debugFhs;
+      };
+      apps.${system} = {
+        default = {
+          type = "app";
+          program = "${fhs}/bin/scobc-yocto";
+          meta.description = "Enter the meta-scobc Yocto FHS build environment";
+        };
+        debug = {
+          type = "app";
+          program = "${debugFhs}/bin/scobc-yocto-debug";
+          meta.description = "Enter an initialized Yocto environment for direct BitBake commands";
+        };
       };
       formatter.${system} = pkgs.nixfmt-rfc-style;
     };
