@@ -1,0 +1,76 @@
+# Default SC-OBC Module V1 Rev.B RAM-root build.
+# Settings match kas/scobc-v1.yml.
+# Select another machine here when building for a different board.
+MACHINE ??= "versal-scobc-v1-ve2302i-revb-sdt-full"
+DISTRO ?= "petalinux"
+
+# confver
+CONF_VERSION = "2"
+
+# package
+PACKAGE_CLASSES ?= "package_rpm"
+
+# features
+USER_CLASSES ?= "buildstats"
+
+# patchresolve
+PATCHRESOLVE = "noop"
+
+# prservice
+PRSERV_HOST = "localhost:0"
+
+# qemu
+PACKAGECONFIG:append:pn-qemu-system-native = " sdl"
+
+# hash
+BB_HASHSERVE = ""
+BB_SIGNATURE_HANDLER = "OEBasicHash"
+
+# fetcher
+CONNECTIVITY_CHECK_URIS ?= ""
+BB_GENERATE_MIRROR_TARBALLS ?= "1"
+
+# licenses
+LICENSE_CREATE_PACKAGE = "1"
+COPY_LIC_MANIFEST = "1"
+LICENSE_FLAGS_ACCEPTED = " \
+        commercial_${MLPREFIX}ffmpeg \
+        commercial_${MLPREFIX}x264 \
+        commercial_${MLPREFIX}gstreamer1.0-omx \
+        commercial_${MLPREFIX}libomxil \
+        commercial_${MLPREFIX}sox \
+        commercial_${MLPREFIX}faac \
+        commercial_${MLPREFIX}faad2 \
+        xilinx "
+
+# diskmon
+BB_DISKMON_DIRS ??= "\
+    STOPTASKS,${TMPDIR},1G,100K \
+    STOPTASKS,${DL_DIR},1G,100K \
+    STOPTASKS,${SSTATE_DIR},1G,100K \
+    STOPTASKS,/tmp,100M,100K \
+    HALT,${TMPDIR},100M,1K \
+    HALT,${DL_DIR},100M,1K \
+    HALT,${SSTATE_DIR},100M,1K \
+    HALT,/tmp,10M,1K"
+
+# sanity
+SKIP_META_XILINX_MALI400_SANITY_CHECK = "1"
+SKIP_META_XILINX_STANDALONE_SANITY_CHECK = "1"
+SKIP_META_XILINX_STANDALONE_SDT_SANITY_CHECK = "1"
+SKIP_META_XILINX_TOOLS_SANITY_CHECK = "1"
+SKIP_META_VIRT_SANITY_CHECK = "1"
+SKIP_META_SECURITY_SANITY_CHECK = "1"
+SKIP_META_TPM_SANITY_CHECK = "1"
+SKIP_META_GNOME_SANITY_CHECK = "1"
+SKIP_META_RAUC_FEATURE_CHECK = "1"
+
+# initramfs-image-name
+INITRAMFS_IMAGE = "sc-initramfs-image-minimal"
+
+# enable-ramroot
+INITRAMFS_FSTYPES = "cpio.gz cpio.gz.u-boot"
+INITRAMFS_IMAGE_BUNDLE = "0"
+
+KERNEL_CLASSES:append = " kernel-fitimage"
+KERNEL_IMAGETYPES:append = " fitImage"

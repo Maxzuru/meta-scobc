@@ -1,0 +1,17 @@
+### SC-OBC build environment is ready. ###
+
+The default configuration builds a RAM-root image for
+SC-OBC Module V1 Rev.B (versal-scobc-v1-ve2302i-revb-sdt-full).
+
+Build the image with:
+    bitbake sc-image-ramroot
+
+To build for another board, set MACHINE in conf/local.conf.
+Build artifacts are available under tmp/deploy/images/${MACHINE}/
+in the build directory.
+
+Other commonly useful commands are:
+ - 'bitbake -c devshell <recipe>' opens a recipe development shell
+ - 'devtool' and 'recipetool' handle common recipe tasks
+ - 'bitbake-layers' handles common layer tasks
+ - 'oe-pkgdata-util' handles common target package tasks

@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# Copyright (C) 2025, Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2026 Space Cubics Inc.
+#
+# SPDX-License-Identifier: MIT
+
+if [ -n "${BASH_SOURCE:-}" ]; then
+    sc_init_script=$BASH_SOURCE
+    if [ "$0" = "$sc_init_script" ]; then
+        echo "Error: source this script: . ./scripts/sc-init-build-env [builddir]" >&2
+        exit 1
+    fi
+elif [ -n "${ZSH_NAME:-}" ]; then
+    case "$ZSH_EVAL_CONTEXT" in
+        *:file) sc_init_script=$0 ;;
+        *) echo "Error: source this script: . ./scripts/sc-init-build-env [builddir]" >&2
+           exit 1 ;;
+    esac
+else
+    echo "Error: source sc-init-build-env from Bash or Zsh." >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+sc_init_build_env() {
+    # Function-local variables preserve the caller's arguments and TEMPLATECONF.
+    local init_script build_dir root_dir
+    local TEMPLATECONF="${TEMPLATECONF:-}"
+    root_dir=$(readlink -f "$(dirname "$sc_init_script")/..") || return 1
+    init_script="$root_dir/sources/poky/oe-init-build-env"
+    build_dir="${1:-${KAS_BUILD_DIR:-$root_dir/build}}"
+
+    if [ ! -r "$init_script" ]; then
+        echo "Error: check out sources/poky before initializing the build environment." >&2
+        return 1
+    fi
+    if [ -z "$TEMPLATECONF" ]; then
+        TEMPLATECONF="$root_dir/meta-scobc/conf/templates/default"
+    fi
+    export TEMPLATECONF
+
+    git -C "$root_dir/sources/meta-xilinx" submodule update --init --recursive || return 1
+
+    # Preserve the shared cache locations exported by the caller (as kas does).
+    # BitBake otherwise filters these variables out and uses build-local caches.
+    export BB_ENV_PASSTHROUGH_ADDITIONS="${BB_ENV_PASSTHROUGH_ADDITIONS:-} DL_DIR SSTATE_DIR"
+
+    # oe-init-build-env sets PATH, BBPATH and BUILDDIR and creates missing conf files.
+    if ! . "$init_script" "$build_dir"; then
+        cd "$root_dir" || return 1
+        return 1
+    fi
+    cd "$root_dir" || return 1
+    case ":$PATH:" in
+        *":$root_dir/sources/meta-xilinx/meta-xilinx-core/gen-machine-conf:"*) ;;
+        *) export PATH="$root_dir/sources/meta-xilinx/meta-xilinx-core/gen-machine-conf:$PATH" ;;
+    esac
+}
+
+if sc_init_build_env "$@"; then
+    unset sc_init_script
+    unset -f sc_init_build_env
+else
+    unset sc_init_script
+    unset -f sc_init_build_env
+    return 1
+fi
