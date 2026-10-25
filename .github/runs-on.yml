@@ -1,0 +1,17 @@
+images:
+  vivado-2025-2:
+    ami: "ami-0bb114045a183aac2"
+    platform: linux
+    arch: x64
+
+runners:
+  vivado-2025-2:
+    family:
+      - "m8i.8xlarge"
+    image: vivado-2025-2
+    volume: "400gb:gp3"
+    spot: true
+    ssh: false
+    tags:
+      - "Workload:vivado"
+      - "VivadoVersion:2025.2"
