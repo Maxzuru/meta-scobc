@@ -1,0 +1,137 @@
+name: Publish SC-OBC V1 SDT
+
+on:
+  repository_dispatch:
+    types: [artifact-published]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: sdt-publish-${{ github.event.client_payload.tag }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: ${{ github.event.repository.fork == false }}
+    runs-on: ubuntu-latest
+    outputs:
+      sdt_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - name: Validate release
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.client_payload.tag }}
+          ARTIFACT_URL: ${{ github.event.client_payload.artifact_url }}
+          ARTIFACT_VE2002_URL: ${{ github.event.client_payload.artifact_ve2002_url }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]{4}\.[0-9]{2}$ ]]
+          for url in "$ARTIFACT_URL" "$ARTIFACT_VE2002_URL"; do
+            [[ "$url" =~ ^https://downloads\.spacecubics\.com/[A-Za-z0-9._/-]+/fpga/$ ]]
+            [[ "$url" == */"$RELEASE_TAG"/fpga/ ]]
+          done
+
+      - name: Checkout SDT generator sources
+        uses: actions/checkout@v7
+        with:
+          repository: spacecubics/system-device-tree-xlnx
+          ref: sc-v2025.2
+          persist-credentials: false
+
+      - name: Resolve SDT generator revision
+        id: source
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  generate:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: ve2302i
+            xsa: sc_obc_v1_versal.xsa
+            board: versal-scobc-v1
+          - variant: ve2302e
+            xsa: sc_obc_v1_versal_ve2302e.xsa
+            board: versal-scobc-v1-devgrade
+          - variant: ve2002e
+            xsa: sc_obc_v1_versal_ve2002e.xsa
+            board: versal-scobc-v1-devgrade
+
+    name: Generate SDT for ${{ matrix.variant }}
+    runs-on: >-
+      runs-on=${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.variant }}/runner=vivado-2025-2
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout workflow scripts
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+
+      - name: Checkout SDT generator sources
+        uses: actions/checkout@v7
+        with:
+          repository: spacecubics/system-device-tree-xlnx
+          ref: ${{ needs.prepare.outputs.sdt_sha }}
+          path: system-device-tree-xlnx
+          persist-credentials: false
+
+      - name: Generate and archive SDT
+        shell: bash
+        env:
+          VARIANT: ${{ matrix.variant }}
+          XSA_NAME: ${{ matrix.xsa }}
+          BOARD: ${{ matrix.board }}
+          ARTIFACT_URL: ${{ matrix.variant == 've2002e' && github.event.client_payload.artifact_ve2002_url || github.event.client_payload.artifact_url }}
+          CUSTOM_SDT_REPO: ${{ github.workspace }}/system-device-tree-xlnx
+        run: bash .github/scripts/generate-sdt-artifacts.sh
+
+      - name: Store SDT archives
+        uses: actions/upload-artifact@v7
+        with:
+          name: sdt-${{ matrix.variant }}
+          path: ${{ runner.temp }}/sdt-artifacts/*.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  publish:
+    needs: generate
+    runs-on: ubuntu-latest
+    environment: sdt-publish
+
+    steps:
+      - name: Checkout workflow scripts
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Download SDT archives
+        uses: actions/download-artifact@v7
+        with:
+          pattern: sdt-*
+          path: ${{ runner.temp }}/sdt-artifacts
+          merge-multiple: true
+
+      - name: Create R2 upload commands
+        id: r2
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.client_payload.tag }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          R2_RELEASE_PREFIX: ${{ vars.R2_RELEASE_PREFIX || 'products/scobc-v1/releases' }}
+          R2_RELEASE_VE2002_PREFIX: ${{ vars.R2_RELEASE_VE2002_PREFIX || 'developments/scobc-v1/releases' }}
+        run: bash .github/scripts/create-sdt-upload-commands.sh
+
+      - name: Publish SDT archives
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: ${{ steps.r2.outputs.commands }}
