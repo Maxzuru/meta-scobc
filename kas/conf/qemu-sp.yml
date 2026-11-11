@@ -4,6 +4,9 @@ header:
 local_conf_header:
   qemu-sp: |
     ENABLE_SP_EMULATION = "1"
+  sp-firmware-uri: |
+    SP_FIRMWARE_URI ?= "https://downloads.spacecubics.com/products/scobc-v1/releases/v2026.10/sp-firmware/zephyr.elf;downloadfilename=scobc-v1-sp-firmware-v2026.10.elf"
+    SP_FIRMWARE_URI[sha256sum] ?= "88aecc434fd761a75269ae928d5ec431001786a867b1fe2af5da4291c3617715"
 
 env:
   SP_FIRMWARE_URI:

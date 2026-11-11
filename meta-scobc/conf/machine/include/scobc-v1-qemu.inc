@@ -56,10 +56,9 @@ QEMU_HW_DTB_PS:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-sp-virt.dt
 # reset with the main processor instance
 QEMU_HW_DTB_PMC:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-pmc-sp-virt.dtb"
 
-# QEMU's loader takes a plain path, not a fetcher URI
-SP_FIRMWARE_PATH = "${@(d.getVar('SP_FIRMWARE_URI') or '').removeprefix('file://')}"
+EXTRA_IMAGEDEPENDS:append:scobc-qemu-sp = " sp-firmware"
 
 QB_OPT_APPEND:append:scobc-qemu-sp = " -asu-args '-M riscv-fdt \
     -hw-dtb @DEPLOY_DIR_IMAGE@/${QEMU_HW_DTB_PATH}/board-scobc-v1-sp-virt.dtb \
-    -device loader,file=${SP_FIRMWARE_PATH},cpu-num=0 \
+    -device loader,file=@DEPLOY_DIR_IMAGE@/sp-firmware.elf,cpu-num=0 \
     -nodefaults -display none ${SCOBC_QEMU_SP_SERIAL} ${SCOBC_QEMU_SP_MONITOR}'"
