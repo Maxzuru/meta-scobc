@@ -1,0 +1,8 @@
+header:
+  version: 19
+
+local_conf_header:
+  qemu-qspi-boot: |
+    # Dualboot (sc-image-dualboot) is not supported with this overlay yet.
+
+    SCOBC_QEMU_BOOT_SOURCE = "qspi"
