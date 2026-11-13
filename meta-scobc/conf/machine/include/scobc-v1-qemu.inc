@@ -3,6 +3,10 @@
 # QEMU hardware device trees
 QEMU_HW_DTB_PS ?= "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-virt.dtb"
 QEMU_HW_DTB_PMC ?= "${QEMU_HW_DTB_PATH}/board-versal-xcve2302-pmc-virt.dtb"
+# The safety processor reports the board revision and grade
+QEMU_HW_DTB_SP ?= "${QEMU_HW_DTB_PATH}/board-scobc-v1-sp-virt.dtb"
+QEMU_HW_DTB_SP:scobc-v1-reva = "${QEMU_HW_DTB_PATH}/board-scobc-v1-reva-sp-virt.dtb"
+QEMU_HW_DTB_SP:scobc-v1-reva:scobc-v1-devgrade = "${QEMU_HW_DTB_PATH}/board-scobc-v1-devgrade-reva-sp-virt.dtb"
 
 # Boot (stage 1) source: sd, emmc or qspi
 SCOBC_QEMU_BOOT_SOURCE ??= "sd"
@@ -59,6 +63,6 @@ QEMU_HW_DTB_PMC:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-pmc-sp-virt.
 EXTRA_IMAGEDEPENDS:append:scobc-qemu-sp = " sp-firmware"
 
 QB_OPT_APPEND:append:scobc-qemu-sp = " -asu-args '-M riscv-fdt \
-    -hw-dtb @DEPLOY_DIR_IMAGE@/${QEMU_HW_DTB_PATH}/board-scobc-v1-sp-virt.dtb \
+    -hw-dtb @DEPLOY_DIR_IMAGE@/${QEMU_HW_DTB_SP} \
     -device loader,file=@DEPLOY_DIR_IMAGE@/sp-firmware.elf,cpu-num=0 \
     -nodefaults -display none ${SCOBC_QEMU_SP_SERIAL} ${SCOBC_QEMU_SP_MONITOR}'"
