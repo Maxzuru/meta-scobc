@@ -9,7 +9,11 @@ SCOBC_QEMU_BOOT_SOURCE ??= "sd"
 # Source of the OS image: sd or emmc
 SCOBC_QEMU_OS_SOURCE ??= "sd"
 
+# Run the safety processor alongside the Versal model
+ENABLE_SP_EMULATION ??= "0"
+
 MACHINEOVERRIDES .= ":scobc-qemu-boot-${SCOBC_QEMU_BOOT_SOURCE}:scobc-qemu-os-${SCOBC_QEMU_OS_SOURCE}"
+MACHINEOVERRIDES .= "${@':scobc-qemu-sp' if bb.utils.to_boolean(d.getVar('ENABLE_SP_EMULATION'), False) else ''}"
 
 # The board has 4 GB of DDR memory
 QB_MEM ?= "-m 4G"
@@ -38,3 +42,21 @@ QEMU_HW_SD_DRIVE_INDEX:scobc-qemu-os-emmc = "3"
 QB_OPT_APPEND:append:scobc-qemu-boot-qspi = " \
     -drive file=@DEPLOY_DIR_IMAGE@/qemu-qspi-${MACHINE}.bin,if=mtd,format=raw,index=0,readonly=on \
     -drive file=@DEPLOY_DIR_IMAGE@/qemu-qspi-${MACHINE}.bin,if=mtd,format=raw,index=1,readonly=on"
+
+# Run the safety processor QEMU alongside the Versal instances and connect
+# it to SPI1 over remote-port. The multiarch wrapper starts the riscv32
+# instance given with -asu-args in the common machine path, where both
+# sides find the remote-port socket.
+SCOBC_QEMU_SP_SERIAL ?= "-serial tcp:127.0.0.1:4322,server=on,wait=off"
+# Human monitor for qom-set on the sensor models
+SCOBC_QEMU_SP_MONITOR ?= "-monitor tcp:127.0.0.1:4323,server=on,wait=off"
+
+QEMU_HW_DTB_PS:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-sp-virt.dtb"
+
+# QEMU's loader takes a plain path, not a fetcher URI
+SP_FIRMWARE_PATH = "${@(d.getVar('SP_FIRMWARE_URI') or '').removeprefix('file://')}"
+
+QB_OPT_APPEND:append:scobc-qemu-sp = " -asu-args '-M riscv-fdt \
+    -hw-dtb @DEPLOY_DIR_IMAGE@/${QEMU_HW_DTB_PATH}/board-scobc-v1-sp-virt.dtb \
+    -device loader,file=${SP_FIRMWARE_PATH},cpu-num=0 \
+    -nodefaults -display none ${SCOBC_QEMU_SP_SERIAL} ${SCOBC_QEMU_SP_MONITOR}'"
