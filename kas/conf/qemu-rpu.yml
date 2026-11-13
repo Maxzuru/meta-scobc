@@ -1,0 +1,7 @@
+header:
+  version: 19
+  includes:
+    - kas/conf/rpu-firmware.yml
+
+env:
+  SCOBC_QEMU_RPU_SERIAL:

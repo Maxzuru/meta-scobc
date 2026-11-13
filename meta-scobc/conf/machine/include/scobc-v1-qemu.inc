@@ -14,6 +14,17 @@ MACHINEOVERRIDES .= ":scobc-qemu-boot-${SCOBC_QEMU_BOOT_SOURCE}:scobc-qemu-os-${
 # The board has 4 GB of DDR memory
 QB_MEM ?= "-m 4G"
 
+# The RPU firmware bundled into boot.bin prints to the second PL011. QEMU
+# does not wait for a connection, so output before connecting is lost.
+# Use a chardev, as the multiarch wrapper swaps "tcp:127.0.0.1:" arguments
+# with the runqemu slirp network options. The hardware device tree binds
+# the UART to the chardev named serial3.
+SCOBC_QEMU_RPU_SERIAL ?= "-chardev socket,id=serial3,host=127.0.0.1,port=4321,server=on,wait=off -serial chardev:serial3"
+QEMU_HW_SERIAL ?= "-serial null -serial null -serial mon:stdio ${@ \
+    d.getVar('SCOBC_QEMU_RPU_SERIAL') \
+    if bb.utils.to_boolean(d.getVar('ENABLE_RPU_FIRMWARE'), False) \
+    else '-serial null'}"
+
 # Boot from SD controller 0 like the real hardware, instead of boot mode 5
 # which uses SD controller 1 in 2.0 mode
 QEMU_HW_BOOT_MODE ?= "3"
