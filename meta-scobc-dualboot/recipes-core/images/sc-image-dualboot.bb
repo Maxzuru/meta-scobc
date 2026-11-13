@@ -13,6 +13,13 @@ inherit image_types_wic
 IMAGE_FSTYPES = "wic wic.xz wic.bmap"
 WKS_FILES = "sc-dualboot.wks.in"
 
+# Provide the padded SD image for runqemu
+IMAGE_FSTYPES += "wic.qemu-sd"
+QB_DEFAULT_FSTYPE = "wic.qemu-sd"
+QB_FSINFO = "wic:no-kernel-in-fs"
+QB_ROOTFS = ""
+QB_ROOTFS_OPT = " -drive if=sd,index=${QEMU_HW_SD_DRIVE_INDEX},file=@ROOTFS@,format=raw"
+
 MAIN_IMAGE_NAME   = "sc-image-dev"
 GOLDEN_IMAGE_NAME = "sc-image-minimal"
 

@@ -14,6 +14,13 @@ IMAGE_LINGUAS = " "
 IMAGE_FSTYPES = "wic wic.xz wic.bmap"
 WKS_FILES = "sc-ramroot-sd.wks"
 
+# Provide the padded SD image for runqemu
+IMAGE_FSTYPES += "wic.qemu-sd"
+QB_DEFAULT_FSTYPE = "wic.qemu-sd"
+QB_FSINFO = "wic:no-kernel-in-fs"
+QB_ROOTFS = ""
+QB_ROOTFS_OPT = " -drive if=sd,index=${QEMU_HW_SD_DRIVE_INDEX},file=@ROOTFS@,format=raw"
+
 # PetaLinux normally places the plain fitImage in IMAGE_BOOT_FILES.
 # Replace it with the artifact appropriate for the selected mode.
 IMAGE_BOOT_FILES:remove = "fitImage"
