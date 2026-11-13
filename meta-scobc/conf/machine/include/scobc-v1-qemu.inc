@@ -52,6 +52,9 @@ SCOBC_QEMU_SP_SERIAL ?= "-serial tcp:127.0.0.1:4322,server=on,wait=off"
 SCOBC_QEMU_SP_MONITOR ?= "-monitor tcp:127.0.0.1:4323,server=on,wait=off"
 
 QEMU_HW_DTB_PS:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-sp-virt.dtb"
+# The safety processor resets the whole Versal, so the PMC instance has to
+# reset with the main processor instance
+QEMU_HW_DTB_PMC:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-pmc-sp-virt.dtb"
 
 # QEMU's loader takes a plain path, not a fetcher URI
 SP_FIRMWARE_PATH = "${@(d.getVar('SP_FIRMWARE_URI') or '').removeprefix('file://')}"
