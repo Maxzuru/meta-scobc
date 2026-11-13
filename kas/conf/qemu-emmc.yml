@@ -1,0 +1,9 @@
+header:
+  version: 19
+
+local_conf_header:
+  qemu-emmc-boot: |
+    # Dualboot (sc-image-dualboot) is not supported with this overlay yet.
+
+    SCOBC_QEMU_BOOT_SOURCE = "emmc"
+    SCOBC_QEMU_OS_SOURCE = "emmc"
