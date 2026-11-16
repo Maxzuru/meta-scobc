@@ -11,3 +11,4 @@ local_conf_header:
 env:
   RPU_FIRMWARE_URI:
   RPU_FIRMWARE_SHA256:
+  SCOBC_QEMU_RPU_SERIAL:
