@@ -16,7 +16,7 @@ SCOBC_QEMU_BOOT_SOURCE ??= "sd"
 SCOBC_QEMU_OS_SOURCE ??= "sd"
 
 # Run the safety processor alongside the Versal model
-ENABLE_SP_EMULATION ??= "0"
+ENABLE_SP_EMULATION ??= "1"
 
 MACHINEOVERRIDES .= ":scobc-qemu-boot-${SCOBC_QEMU_BOOT_SOURCE}:scobc-qemu-os-${SCOBC_QEMU_OS_SOURCE}"
 MACHINEOVERRIDES .= "${@':scobc-qemu-sp' if bb.utils.to_boolean(d.getVar('ENABLE_SP_EMULATION'), False) else ''}"
@@ -62,10 +62,9 @@ QEMU_HW_DTB_PS:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-sp-virt.dt
 # reset with the main processor instance
 QEMU_HW_DTB_PMC:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-pmc-sp-virt.dtb"
 
-# QEMU's loader takes a plain path, not a fetcher URI
-SP_FIRMWARE_PATH = "${@(d.getVar('SP_FIRMWARE_URI') or '').removeprefix('file://')}"
+EXTRA_IMAGEDEPENDS:append:scobc-qemu-sp = " sp-firmware"
 
 QB_OPT_APPEND:append:scobc-qemu-sp = " -asu-args '-M riscv-fdt \
     -hw-dtb @DEPLOY_DIR_IMAGE@/${QEMU_HW_DTB_SP} \
-    -device loader,file=${SP_FIRMWARE_PATH},cpu-num=0 \
+    -device loader,file=@DEPLOY_DIR_IMAGE@/sp-firmware.elf,cpu-num=0 \
     -nodefaults -display none ${SCOBC_QEMU_SP_SERIAL} ${SCOBC_QEMU_SP_MONITOR}'"

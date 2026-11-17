@@ -1,11 +1,8 @@
 header:
   version: 19
 
-local_conf_header:
-  qemu-sp: |
-    ENABLE_SP_EMULATION = "1"
-
 env:
+  ENABLE_SP_EMULATION:
   SP_FIRMWARE_URI:
   SP_FIRMWARE_SHA256:
   SCOBC_QEMU_SP_SERIAL:

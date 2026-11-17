@@ -9,3 +9,4 @@ header:
     - kas/conf/hawkbit.yml
     - kas/conf/rauc.yml
     - kas/conf/xilinx-fpd-watchdog.yml
+    - kas/conf/qemu-sp.yml

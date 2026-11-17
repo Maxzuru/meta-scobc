@@ -5,3 +5,4 @@ header:
     - kas/sc/scobc.yml
     - kas/machine/versal-scobc-v1-ve2002e-revb-sdt-full.yml
     - kas/targets/sc-image-ramroot.yml
+    - kas/conf/qemu-sp.yml
