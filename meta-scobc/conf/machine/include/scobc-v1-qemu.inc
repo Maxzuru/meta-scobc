@@ -1,14 +1,21 @@
 # QEMU model of the SC-OBC Module V1, used by runqemu
 
+# Board revision and grade in the QEMU hardware device tree names. The main
+# processor has the boot flash of the board, and the safety processor
+# reports the board revision and grade.
+SCOBC_QEMU_BOARD ?= "revb"
+SCOBC_QEMU_BOARD:scobc-v1-reva = "reva"
+SCOBC_QEMU_BOARD:scobc-v1-reva:scobc-v1-devgrade = "devgrade-reva"
+SCOBC_QEMU_BOARD:scobc-v1-revb = "revb"
+SCOBC_QEMU_BOARD:scobc-v1-revb:scobc-v1-devgrade = "devgrade-revb"
+# Rev. A has the same main processor parts in both grades
+SCOBC_QEMU_PS_BOARD ?= "${SCOBC_QEMU_BOARD}"
+SCOBC_QEMU_PS_BOARD:scobc-v1-reva = "reva"
+
 # QEMU hardware device trees
-QEMU_HW_DTB_PS ?= "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-virt.dtb"
+QEMU_HW_DTB_PS ?= "${QEMU_HW_DTB_PATH}/board-scobc-v1-${SCOBC_QEMU_PS_BOARD}-ps-virt.dtb"
 QEMU_HW_DTB_PMC ?= "${QEMU_HW_DTB_PATH}/board-versal-xcve2302-pmc-virt.dtb"
-# The safety processor reports the board revision and grade
-QEMU_HW_DTB_SP ?= "${QEMU_HW_DTB_PATH}/board-scobc-v1-revb-sp-virt.dtb"
-QEMU_HW_DTB_SP:scobc-v1-reva = "${QEMU_HW_DTB_PATH}/board-scobc-v1-reva-sp-virt.dtb"
-QEMU_HW_DTB_SP:scobc-v1-reva:scobc-v1-devgrade = "${QEMU_HW_DTB_PATH}/board-scobc-v1-devgrade-reva-sp-virt.dtb"
-QEMU_HW_DTB_SP:scobc-v1-revb = "${QEMU_HW_DTB_PATH}/board-scobc-v1-revb-sp-virt.dtb"
-QEMU_HW_DTB_SP:scobc-v1-revb:scobc-v1-devgrade = "${QEMU_HW_DTB_PATH}/board-scobc-v1-devgrade-revb-sp-virt.dtb"
+QEMU_HW_DTB_SP ?= "${QEMU_HW_DTB_PATH}/board-scobc-v1-${SCOBC_QEMU_BOARD}-sp-virt.dtb"
 
 # Boot (stage 1) source: sd, emmc or qspi
 SCOBC_QEMU_BOOT_SOURCE ??= "sd"
@@ -57,7 +64,7 @@ SCOBC_QEMU_SP_SERIAL ?= "-serial tcp:127.0.0.1:4322,server=on,wait=off"
 # Human monitor for qom-set on the sensor models
 SCOBC_QEMU_SP_MONITOR ?= "-monitor tcp:127.0.0.1:4323,server=on,wait=off"
 
-QEMU_HW_DTB_PS:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-ps-sp-virt.dtb"
+QEMU_HW_DTB_PS:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-${SCOBC_QEMU_PS_BOARD}-ps-sp-virt.dtb"
 # The safety processor resets the whole Versal, so the PMC instance has to
 # reset with the main processor instance
 QEMU_HW_DTB_PMC:scobc-qemu-sp = "${QEMU_HW_DTB_PATH}/board-scobc-v1-pmc-sp-virt.dtb"
